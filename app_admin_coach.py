@@ -23,7 +23,7 @@ column_update.write("action")
 column_update.write("action")
 
 for coach in coaches :
-    column_id, column_name, column_specialite, column_update, column_delete = current_line.columns(5, gap ="small")                                             "small")
+    column_id, column_name, column_specialite, column_update, column_delete = current_line.columns(5, gap ="small")
     column_id.write(coach.id_coach)
     column_name.write(coach.nom_coach)
     column_name.write(coach.specialite)
