@@ -1,4 +1,4 @@
-from sqlmodel import Session, select, where
+from sqlmodel import Session, select
 from sqlalchemy import Engine
 
 from models import * 
