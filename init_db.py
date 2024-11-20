@@ -1,7 +1,7 @@
 import sqlmodel as sm
 from sqlalchemy import Engine
 
-def get_engine() -> Engine
+def get_engine() -> Engine :
 
     sqlitefile_name = "test_db.db"
     sqlite_url = f"sqlite:///{sqlitefile_name}"
