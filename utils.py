@@ -3,6 +3,8 @@ from sqlalchemy import Engine
 
 from models import * 
 
-def get_coaches(engine : Engine):
+def get_coaches(engine : Engine) -> list[Coach]:
     with Session(engine) as session:
-        statement = select(Coach, Cours).where(Coach.id_coach == Cours.coach_id)
+        statement = select(Coach)
+        result = session.exec(statement)
+        return list(result)

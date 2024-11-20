@@ -9,11 +9,16 @@ def populate_db(engine : Engine) :
     echo_object = sm.SQLModel.metadata.create_all(engine)
     print(echo_object)
 
-    try: 
-        session = sm.Session(engine) 
+    with sm.Session(engine) as session :
 
-        coach1 = Coach(nom_coach= "Maxime", specialite="Yoga")
+        coach1 = Coach(nom_coach= "Maxime", specialite="Yoga et Pilates")
+        coach2 = Coach(nom_coach= "Nicolas", specialite="Crossfit et Pump")
+        coach3 = Coach(nom_coach= "Arnold", specialite="Musculation")
+        coach4 = Coach(nom_coach= "Mike", specialite="Boxe et Body Combat")
         session.add(coach1)
+        session.add(coach2)
+        session.add(coach3)
+        session.add(coach4)
         session.commit()
 
         horaire= dt.datetime(2024, 11, 19, 9,0,0)
@@ -23,13 +28,10 @@ def populate_db(engine : Engine) :
             coach_id_cours = coach1.id_coach)
         
         session.add(cours1)
-
+        session.commit()
         #session.refresh(coach1)
         #cours1.coach = coach1
-        
 
-    except:
-        print("Erroe")
 
 
 if __name__ == "__main__":
