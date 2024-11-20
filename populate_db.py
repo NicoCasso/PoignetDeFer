@@ -1,31 +1,30 @@
 import sqlmodel as sm
+from sqlalchemy import Engine
+
 import datetime as dt
 from models import *
+import init_db as idb
 
-horaire= dt.datetime(2024, 11, 19, 9,0,0)
+def populate_db(engine : Engine) :
+    echo_object = sm.SQLModel.metadata.create_all(engine)
+    print(echo_object)
 
-coach1 = Coach(nom_coach= "Maxime", specialite="Yoga")
+    horaire= dt.datetime(2024, 11, 19, 9,0,0)
 
-cours1 = Cours(nom_cours="Yoga", 
-    horaire_cours = horaire, 
-    capacite_max=20)
+    coach1 = Coach(nom_coach= "Maxime", specialite="Yoga")
 
-# /home/nicolascassonnet/Documents/WORK/LaPoigneDAcier/test_db.db
-sqlitefile_name = "test_db.db"
-sqlite_url = f"sqlite:///{sqlitefile_name}"
-engine = sm.create_engine(sqlite_url, echo = True)
+    cours1 = Cours(nom_cours="Yoga", 
+        horaire_cours = horaire, 
+        capacite_max=20)
 
-echo_object = sm.SQLModel.metadata.create_all(engine)
-print(echo_object)
+    with sm.Session(engine) as session:
+        session.add(coach1)
+        session.commit()
 
-with sm.Session(engine) as session:
-    session.add(coach1)
-    session.commit()
+        session.refresh(coach1)
+        cours1.coach = coach1
+        session.add(cours1)
 
-    session.refresh(coach1)
-
-    cours1.coach = coach1
-    session.add(cours1)
-    session.commit()
-
-
+if __name__ == "__main__":
+    engine = idb.get_engine()
+    populate_db(engine)
