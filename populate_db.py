@@ -26,7 +26,7 @@ def enregistrer_membres(nombre_de_membres: int, engine: Engine):
         session.commit()
 
 
-#creation des faux membres(pour 10)
+#creation des faux membres(10)
 def creation_membres():
     return (fake.name(), fake.email())
 for i in range(10):
