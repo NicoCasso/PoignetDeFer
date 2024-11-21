@@ -4,13 +4,6 @@
     // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
     "version": "0.2.0",
     "configurations": [
-<<<<<<< HEAD
-=======
-<<<<<<< HEAD
-=======
-        
->>>>>>> max2
->>>>>>> 07742f9c007f2253cd620bac79f13f0410103954
         {
             "name": "Python:Streamlit",
             "type": "debugpy",
@@ -20,15 +13,7 @@
                  "run",
                  "${file}",
                  "--server.port",
-<<<<<<< HEAD
                  "8502"
-=======
-<<<<<<< HEAD
-                 "8502"
-=======
-                 "8503"
->>>>>>> max2
->>>>>>> 07742f9c007f2253cd620bac79f13f0410103954
             ]
         }        
     ]

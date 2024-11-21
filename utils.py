@@ -1,7 +1,12 @@
-from sqlmodel import Session, select, delete 
+from sqlmodel import Session, select, delete
 from sqlalchemy import Engine
 from typing import cast
 from models import * 
+
+#______________________________________________________________________________
+#
+# region nicolas
+#______________________________________________________________________________
 
 def get_coaches(engine : Engine) -> list[Coach]:
     return_list = []
@@ -51,8 +56,25 @@ def delete_coach(engine : Engine, coach: Coach) -> bool:
     
     return False
 
-#region maxime
+def get_cours_by_inscriptions2(engine : Engine, inscription_ids:list[int]) -> list[Cours]:
+    list_cours = []
+    with Session(engine) as session:
+        statement = select(
+            Cours, Inscription
+        ).join( 
+            Inscription
+        ).where(
+            Inscription.id_inscription.in_(inscription_ids)
+        )  
+        results = session.exec(statement)
+        list_membres = list(results)
+        
+    return list_cours
 
+#______________________________________________________________________________
+#
+# region maxime
+#______________________________________________________________________________
 
 
 def afficher_cours_dispo(engine : Engine) -> list[Cours]:

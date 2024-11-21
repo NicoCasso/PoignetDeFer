@@ -7,13 +7,12 @@ import utils
 from sqlalchemy import Engine
 from sqlmodel import Session, select
 from typing import cast
-engine = get_engine()
 
+engine = get_engine()
 
 st.title("Historique des cours")
 
 # Afficher l'historique des cours pour chaque membre
-
 
 name_historique = st.text_input("Entrez votre nom pour voir votre historique")
 if st.button("Voir l'historique"):

@@ -25,7 +25,6 @@ def enregistrer_membres(nombre_de_membres: int, engine: Engine):
         session.add_all(membres)
         session.commit()
 
-
 #creation des faux membres(10)
 def creation_membres():
     return (fake.name(), fake.email())
@@ -45,6 +44,8 @@ def populate_db(engine : Engine) :
         coach4 = Coach(nom_coach= "Mike", specialite="Boxe et Body Combat")
         membre1 = Membre(nom_membre= "edouard", email="eaeae")
         membre2 = Membre(nom_membre="Jean", email="eoeuu")
+
+
         session.add(coach1)
         session.add(coach2)
         session.add(coach3)
@@ -53,8 +54,6 @@ def populate_db(engine : Engine) :
         session.add(membre2)
         session.commit()
 
-
-       
         cours1 = Cours(nom_cours="Yoga et Pilates", 
             jour = "lundi",
             heure = 9,
