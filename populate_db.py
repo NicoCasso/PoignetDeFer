@@ -26,20 +26,51 @@ def populate_db(engine : Engine) :
         coach2 = Coach(nom_coach= "Nicolas", specialite="Crossfit et Pump")
         coach3 = Coach(nom_coach= "Arnold", specialite="Musculation")
         coach4 = Coach(nom_coach= "Mike", specialite="Boxe et Body Combat")
+        membre1 = Membre(nom_membre= "edouard", email="eaeae")
+        membre2 = Membre(nom_membre="Jean", email="eoeuu")
         session.add(coach1)
         session.add(coach2)
         session.add(coach3)
         session.add(coach4)
+        session.add(membre1)
+        session.add(membre2)
         session.commit()
 
-        horaire= dt.datetime(2024, 11, 19, 9,0,0)
+
+       
         cours1 = Cours(nom_cours="Yoga et Pilates", 
-            horaire_cours = horaire, 
+            jour = "lundi",
+            heure = 9,
+            capacite_max=20,
+            coach_id_cours = coach1.id_coach)
+        
+        cours2 = Cours(nom_cours="Crossfit et Pump", 
+            jour = "lundi",
+            heure = 10,
             capacite_max=20,
             coach_id_cours = coach1.id_coach)
         
         session.add(cours1)
+        session.add(cours2)
         session.commit()
+
+        date1=dt.datetime(2024, 11, 20)
+        date3=dt.datetime(2024, 11, 19)
+        date7=dt.datetime(2024, 11, 18)
+        date9=dt.datetime(2024, 11, 2)
+
+        inscription1=Inscription(date_inscription=date1,membre_id=membre1.id_membre,cours_id=cours1.id_cours)
+        inscription2=Inscription(date_inscription=date3,membre_id=membre2.id_membre,cours_id=cours1.id_cours)
+        inscription3=Inscription(date_inscription=date7,membre_id=membre1.id_membre,cours_id=cours2.id_cours)
+        inscription4=Inscription(date_inscription=date9,membre_id=membre2.id_membre,cours_id=cours2.id_cours)
+        session.add(inscription1)
+
+        session.add(inscription2)
+        session.add(inscription3)
+        session.add(inscription4)
+
+        session.commit()
+        
         #session.refresh(coach1)
         #cours1.coach = coach1
 

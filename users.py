@@ -1,9 +1,11 @@
 import streamlit as st
 from faker import Faker
-from models import Membres, Cours, inscriptions, nom_membres
-from sqlalchemy import query
-from init_db import engine
-from sqlmodel import Session
+from models import Membre, Cours, Inscription
+from init_db import get_engine
+import utils
+from sqlalchemy import Engine
+from sqlmodel import Session, select
+from typing import cast
 fake = Faker('fr_FR')
 
 # Fonction pour créer des membres fictifs
@@ -12,60 +14,65 @@ def creation_membres(nombre_de_membres: int):
     for _ in range(nombre_de_membres):
         nom = fake.name()
         email = fake.email()
-        membre = Membres(nom=nom, email=email)
+        membre = Membre(nom=nom, email=email)
         membres.append(membre)
     return membres
 
 # Générer des membres fictifs et les enregistrer dans la base de données
-def enregistrer_membres(nombre_de_membres: int):
+def enregistrer_membres(nombre_de_membres: int, engine: Engine):
     membres = creation_membres(nombre_de_membres)
     with Session(engine) as session:
         session.add_all(membres)
         session.commit()
 
 # Interface utilisateur Streamlit
+engine = get_engine()
 st.title("Inscription à un cours")
 
 # Afficher les cours disponibles
-with Session(engine) as session:
-    cours = session.query(Cours).all()
-    cours_disponibles = [(f"{c.nom} ({c.jour} à {c.heure})", c.id) for c in cours]
-    cours_selectionne = st.selectbox("Choisissez un cours", cours_disponibles, format_func=lambda x: x[0])
 
-    # Inscription à un cours
-    nom = st.text_input("Nom")
-    email = st.text_input("Email")
-    if st.button("S'inscrire"):
-        if nom:
-            cours_id = cours_selectionne[1]
-            inscriptions = session.query(inscriptions).filter(inscriptions.cours_id == cours_id).count()
-            if inscriptions < 5:
-                membre = session.query(Membres).filter(Membres.name == nom_membres).first()
-                if not membre:
-                    membre = Membres(nom=nom, email=email)
-                    session.add(membre)
-                    session.commit()
-                inscription = inscriptions(membre_id=membre.id, cours_id=cours_id)
-                session.add(inscription)
-                session.commit()
-                st.success(f"{nom} est inscrit au cours {cours_selectionne[0]}!")
+
+cours=utils.afficher_cours_dispo(engine)
+cours_disponibles = [(f"{c.nom_cours} ({c.jour} à {c.heure})", c.id_cours) for c in cours]
+cours_selectionne = st.selectbox("Choisissez un cours", cours_disponibles)
+                                     #format_func=lambda x:str(x[0]))
+
+# Inscription à un cours
+nom = st.text_input("Nom")
+if st.button("S'inscrire"):
+    list_membres = utils.get_membres_by_nom(engine,nom)
+    if len(list_membres)!=0:
+        id_membre = cast(Membre, list_membres[0]).id_membre
+        cours_id = cours_selectionne[1]
+
+        inscription_list = utils.get_inscription_by_id(engine, cours_id)
+        nb_inscriptions = len(inscription_list)
+        if nb_inscriptions < 5:
+            if utils.create_inscription(engine, cours_id, id_membre):
+                st.success(f"{nom} est inscrit au cours {cours_selectionne[0]}")
             else:
                 st.error("Le cours est complet. Veuillez choisir un autre cours.")
         else:
             st.error("Veuillez entrer votre nom.")
 
-    # Afficher l'historique des cours pour chaque membre
-    st.header("Historique des cours")
-    name_historique = st.text_input("Entrez votre nom pour voir votre historique")
-    if st.button("Voir l'historique"):
-        membre = session.query(Membres).filter(Membres.name == name_historique).first()
-        if membre:
-            histo_inscriptions = session.Query(inscriptions).filter(inscriptions.membre_id == membre.id).all()
-            if inscriptions:
-                for inscription in histo_inscriptions:
-                    cours = session.query(Cours).filter(Cours.id == inscription.cours_id).first()
-                    st.write(f"Cours: {cours.nom}, Jour: {cours.jour}, Heure: {cours.heure}")
-            else:
-                st.write("Aucun cours inscrit.")
+# Afficher l'historique des cours pour chaque membre
+st.header("Historique des cours")
+name_historique = st.text_input("Entrez votre nom pour voir votre historique")
+if st.button("Voir l'historique"):
+    list_membres = utils.get_membres_by_nom(engine,nom)
+    if len(list_membres)!=0:
+        id_membre = cast(Membre, list_membres[0]).id_membre
+        histo_inscriptions=utils.get_history_by_id_membre(engine, id_membre)
+        if len(histo_inscriptions)!=0:
+            inscription_ids=[]
+            for inscription in histo_inscriptions:
+                id_inscription=cast(Inscription,inscription).id_inscription
+                inscription_ids.append(id_inscription)
+                
+            cours_list=utils.get_cours_by_inscriptions(engine,inscription_ids)
+            for cours in cours_list:
+                st.write(f"Cours: {cours.nom_cours}, Jour: {cours.jour}, Heure: {cours.heure}")
         else:
-            st.write("Aucun membre trouvé.")
+            st.write("Aucun cours inscrit.")
+    else:
+        st.write("Aucun membre trouvé.")
