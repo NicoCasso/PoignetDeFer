@@ -1,4 +1,4 @@
-from sqlmodel import Session, select, delete
+from sqlmodel import Session, select, delete 
 from sqlalchemy import Engine
 from typing import cast
 from models import * 
@@ -113,7 +113,7 @@ def get_history_by_id_membre(engine : Engine, id_membre:int) -> list[Inscription
 
     return list_inscription
 
-def get_cours_by_inscriptions(engine : Engine, inscription_id:list[int]) -> list[Cours]:
+def get_cours_by_inscriptions(engine : Engine, inscription_ids:list[int]) -> list[Cours]:
     list_cours = []
     with Session(engine) as session:
         statement = select(
@@ -121,7 +121,9 @@ def get_cours_by_inscriptions(engine : Engine, inscription_id:list[int]) -> list
         ).join( 
             Inscription
         ).where(
-            Inscription.cours_id == inscription_id
+            Inscription.id_inscription.in_(inscription_ids)
         )  
         results = session.exec(statement)
         list_membres = list(results)
+        
+    return list_cours

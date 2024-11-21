@@ -38,24 +38,3 @@ if st.button("S'inscrire"):
         else:
             st.error("Veuillez entrer votre nom.")
 
-# Afficher l'historique des cours pour chaque membre
-st.header("Historique des cours")
-name_historique = st.text_input("Entrez votre nom pour voir votre historique")
-if st.button("Voir l'historique"):
-    list_membres = utils.get_membres_by_nom(engine,nom)
-    if len(list_membres)!=0:
-        id_membre = cast(Membre, list_membres[0]).id_membre
-        histo_inscriptions=utils.get_history_by_id_membre(engine, id_membre)
-        if len(histo_inscriptions)!=0:
-            inscription_ids=[]
-            for inscription in histo_inscriptions:
-                id_inscription=cast(Inscription,inscription).id_inscription
-                inscription_ids.append(id_inscription)
-                
-            cours_list=utils.get_cours_by_inscriptions(engine,inscription_ids)
-            for cours in cours_list:
-                st.write(f"Cours: {cours.nom_cours}, Jour: {cours.jour}, Heure: {cours.heure}")
-        else:
-            st.write("Aucun cours inscrit.")
-    else:
-        st.write("Aucun membre trouvé.")
