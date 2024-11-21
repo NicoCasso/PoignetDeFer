@@ -6,24 +6,7 @@ import utils
 from sqlalchemy import Engine
 from sqlmodel import Session, select
 from typing import cast
-fake = Faker('fr_FR')
 
-# Fonction pour créer des membres fictifs
-def creation_membres(nombre_de_membres: int):
-    membres = []
-    for _ in range(nombre_de_membres):
-        nom = fake.name()
-        email = fake.email()
-        membre = Membre(nom=nom, email=email)
-        membres.append(membre)
-    return membres
-
-# Générer des membres fictifs et les enregistrer dans la base de données
-def enregistrer_membres(nombre_de_membres: int, engine: Engine):
-    membres = creation_membres(nombre_de_membres)
-    with Session(engine) as session:
-        session.add_all(membres)
-        session.commit()
 
 # Interface utilisateur Streamlit
 engine = get_engine()
