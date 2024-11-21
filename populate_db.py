@@ -1,9 +1,20 @@
 import sqlmodel as sm
 from sqlalchemy import Engine
+from faker import Faker
 
 import datetime as dt
 from models import *
 import init_db as idb
+
+fake=Faker("fr_FR")
+
+
+#creation des faux membres(pour 10)
+def creation_membres():
+    return (fake.name(), fake.email())
+for i in range(10):
+    membres = creation_membres()
+    print(f"membres{i+1}:membre:{membres[0]}, Email:{membres[1]}")
 
 def populate_db(engine : Engine) :
     echo_object = sm.SQLModel.metadata.create_all(engine)

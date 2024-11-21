@@ -1,61 +1,44 @@
-from sqlmodel import select, delete
-from sqlmodel import Session as SqlModelSession
+from sqlmodel import Session, select, delete
 from sqlalchemy import Engine
 
 from models import * 
 
 def get_coaches(engine : Engine) -> list[Coach]:
     return_list = []
-    with SqlModelSession(engine) as session2:
+    with Session(engine) as session:
         statement = select(Coach)
-        result = session2.exec(statement)
-        return_list = list(result)
-
-    return return_list
+        result = session.exec(statement)
+        return list(result)
     
 def create_coach(engine : Engine, coach : Coach) -> bool:
-    ended = False
-    with SqlModelSession(engine) as session2:
-        id = coach.id_coach
-        session2.add(coach)
-        try:
-            session2.commit()
-            ended = True
-        except Exception as e:
-            print("---------------->"+str(e))
+    with Session(engine) as session:
+        session.add(coach)
+        session.commit()
+        return True
     
-    return ended
-
-def get_coach_by_id(engine : Engine, id_coach: int) -> Coach:
-    return_value = None
-    with SqlModelSession(engine) as session2:
-        statement = select(Coach).where(Coach.id_coach == id_coach) #.where(Coach.id_coach == Cours.coach_id)
-        results = session2.exec(statement)
-        return_value = results.one()
-
-    return return_value
+    return False
 
 def update_coach(engine : Engine, coach : Coach) -> bool:
-    with SqlModelSession(engine) as session2:
+    with Session(engine) as session:
         statement = select(Coach).where(Coach.id_coach == coach.id_coach)
-        results = session2.exec(statement)
+        results = session.exec(statement)
         linked_coach = results.one()
         linked_coach.nom_coach = coach.nom_coach
         linked_coach.specialite = coach.specialite
-        session2.add(linked_coach)
-        session2.commit()
+        session.add(linked_coach)
+        session.commit()
         return True
     
     return False
 
     
 def delete_coach(engine : Engine, coach: Coach) -> bool:
-    with SqlModelSession(engine) as session2:
+    with Session(engine) as session:
         statement = select(Coach).where(Coach.id_coach == coach.id_coach)
-        results = session2.exec(statement)
+        results = session.exec(statement)
         linked_coach = results.one()
-        session2.delete(linked_coach)
-        session2.commit()
+        session.delete(linked_coach)
+        session.commit()
         return True
     
     return False
