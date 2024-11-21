@@ -33,7 +33,6 @@ def populate_db(engine : Engine) :
         #cours1.coach = coach1
 
 
-
 if __name__ == "__main__":
     engine = idb.get_engine()
     populate_db(engine)

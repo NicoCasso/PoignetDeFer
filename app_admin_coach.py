@@ -1,13 +1,110 @@
 import streamlit as st
 from init_db import get_engine
 from sqlalchemy import Engine
-from utils import get_coaches
+import models
+import utils
+from typing import cast
+        
+      
+st.title("Administration Coach")
 
-st.title("Page Admin Coach")
+edit_mode = False
+edit_mode_key = st.session_state.get("edit_mode")
+if edit_mode_key != None :
+    edit_mode = bool(edit_mode_key)
 
 engine = get_engine()
 
-coaches = get_coaches(engine)
+left_side, right_side = st.columns([0.7, 0.3])
+
+coaches = utils.get_coaches(engine)
+
+#______________________________________________________________________________
+#
+# region left side list
+#______________________________________________________________________________  
+
+left_side.text("Liste des coaches")
+current_line = left_side.container()
+
+column_proportions =[0.1,0.2,0.25,0.2,0.25]
+column_id, column_name, column_specialite, column_update, column_delete = current_line.columns(column_proportions, gap ="small")
+
+column_id.write("id")
+column_name.write("nom")
+column_specialite.write("specialite")
+column_update.write("action")
+column_delete.write("action")
 
 for coach in coaches :
-    st.write("{0} {1} {2}".format(coach.id_coach, coach.nom_coach, coach.specialite))
+    column_id, column_name, column_specialite, column_update, column_delete = current_line.columns(column_proportions, gap ="small")
+    column_id.write(coach.id_coach, )
+    column_name.write(coach.nom_coach)
+    column_specialite.write(coach.specialite)
+    button_key = "upd"+str(coach.id_coach)
+    if column_update.button("modifier", key=button_key) :
+        st.session_state["edit_mode"] = True
+        st.session_state["button_key"] = button_key
+        st.rerun()
+        
+    if column_delete.button("supprimer", key="del"+str(coach.id_coach)) :
+        st.session_state["edit_mode"] = False
+        pass
+
+#______________________________________________________________________________
+#
+# region right side form
+#______________________________________________________________________________    
+
+updating_coach = None
+if edit_mode : 
+
+    id_coach = 0
+    any_key = st.session_state.get("button_key") 
+    if any_key != None :
+        id_coach = int ( str(any_key).replace("upd", ""))
+
+    updating_coach = None
+    if id_coach != 0 :
+        updating_coach = utils.get_coach_by_id(engine, id_coach)
+
+
+current_line = right_side.container()
+
+if updating_coach != None : 
+    updating_coach = cast(models.Coach, updating_coach)
+    current_line.text("Modifier coach")
+    edit_mode = True
+else :
+    current_line.text("Nouveau coach")
+
+right_side_proportions = [1, 1]
+
+column_label, column_textbox = current_line.columns(right_side_proportions, vertical_alignment="top")
+column_label.text("nom : ")
+if edit_mode :
+    form_nom_coach = column_textbox.text_input("", value = updating_coach.nom_coach , key = "nom_coach")
+else :
+    form_nom_coach = column_textbox.text_input("", key = "nom_coach")
+    
+
+column_label, column_textbox = current_line.columns(right_side_proportions, vertical_alignment="top")
+column_label.text("specialite :")
+if edit_mode :
+    form_specialite_coach = column_textbox.text_input("", value = updating_coach.specialite, key = "specialite_coach")
+else :
+    form_specialite_coach = column_textbox.text_input("", key = "specialite_coach")
+
+if edit_mode :
+    
+    if current_line.button("Modifier") :
+        coach = models.Coach(id_coach=updating_coach.id_coach, nom_coach = form_nom_coach, specialite=form_specialite_coach)
+        utils.update_coach(engine, coach)
+        st.rerun()
+else :
+
+    if current_line.button("Ajouter") :
+        coach = models.Coach(nom_coach = form_nom_coach, specialite=form_specialite_coach)
+        #engine = get_engine()
+        utils.create_coach(engine, coach)
+        st.rerun()          
