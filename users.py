@@ -1,6 +1,9 @@
 import streamlit as st
 from faker import Faker
-
+from models import Membres, Cours, inscriptions, nom_membres
+from sqlalchemy import query
+from init_db import engine
+from sqlmodel import Session
 fake = Faker('fr_FR')
 
 # Fonction pour créer des membres fictifs
@@ -9,7 +12,7 @@ def creation_membres(nombre_de_membres: int):
     for _ in range(nombre_de_membres):
         nom = fake.name()
         email = fake.email()
-        membre = Membre(nom=nom, email=email)
+        membre = Membres(nom=nom, email=email)
         membres.append(membre)
     return membres
 
@@ -35,14 +38,14 @@ with Session(engine) as session:
     if st.button("S'inscrire"):
         if nom:
             cours_id = cours_selectionne[1]
-            inscriptions = session.query(Inscription).filter(Inscription.cours_id == cours_id).count()
+            inscriptions = session.query(inscriptions).filter(inscriptions.cours_id == cours_id).count()
             if inscriptions < 5:
-                membre = session.query(Membre).filter(Membre.name == name).first()
+                membre = session.query(Membres).filter(Membres.name == nom_membres).first()
                 if not membre:
-                    membre = Membre(nom=nom, email=email)
+                    membre = Membres(nom=nom, email=email)
                     session.add(membre)
                     session.commit()
-                inscription = Inscription(membre_id=membre.id, cours_id=cours_id)
+                inscription = inscriptions(membre_id=membre.id, cours_id=cours_id)
                 session.add(inscription)
                 session.commit()
                 st.success(f"{nom} est inscrit au cours {cours_selectionne[0]}!")
@@ -55,14 +58,14 @@ with Session(engine) as session:
     st.header("Historique des cours")
     name_historique = st.text_input("Entrez votre nom pour voir votre historique")
     if st.button("Voir l'historique"):
-        membre = session.query(Membre).filter(Membre.name == name_historique_historique).first()
+        membre = session.query(Membres).filter(Membres.name == name_historique).first()
         if membre:
-            inscriptions = session.query(Inscription).filter(Inscription.membre_id == membre.id).all()
+            histo_inscriptions = session.Query(inscriptions).filter(inscriptions.membre_id == membre.id).all()
             if inscriptions:
-                for inscription in inscriptions:
+                for inscription in histo_inscriptions:
                     cours = session.query(Cours).filter(Cours.id == inscription.cours_id).first()
                     st.write(f"Cours: {cours.nom}, Jour: {cours.jour}, Heure: {cours.heure}")
             else:
                 st.write("Aucun cours inscrit.")
         else:
-            st.write("Aucun membre trouvé avec cet email.")
+            st.write("Aucun membre trouvé.")
