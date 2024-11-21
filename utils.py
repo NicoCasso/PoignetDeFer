@@ -18,6 +18,15 @@ def create_coach(engine : Engine, coach : Coach) -> bool:
     
     return False
 
+def get_coach_by_id(engine : Engine, id_coach: int) -> Coach:
+    return_value = None
+    with Session(engine) as session:
+        statement = select(Coach).where(Coach.id_coach == id_coach) #.where(Coach.id_coach == Cours.coach_id)
+        results = session.exec(statement)
+        return_value = results.one()
+
+    return return_value
+
 def update_coach(engine : Engine, coach : Coach) -> bool:
     with Session(engine) as session:
         statement = select(Coach).where(Coach.id_coach == coach.id_coach)
@@ -30,7 +39,6 @@ def update_coach(engine : Engine, coach : Coach) -> bool:
         return True
     
     return False
-
     
 def delete_coach(engine : Engine, coach: Coach) -> bool:
     with Session(engine) as session:

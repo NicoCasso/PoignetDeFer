@@ -25,7 +25,7 @@ class Membres(SQLModel, table = True):
     
     
     carte_acces_id : int | None = Field(default=None, foreign_key="carte_d_acces.id_carte")
-    carte__acces
+    #carte__acces
 
 class inscriptions(SQLModel, table = True):
     id_inscriptions : int | None = Field(default=None, primary_key=True)
