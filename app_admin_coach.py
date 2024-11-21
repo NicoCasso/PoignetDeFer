@@ -47,10 +47,10 @@ for coach in coaches :
         st.session_state["button_key"] = button_key
         st.rerun()
         
-    if column_delete.button("supprimer") :
+    if column_delete.button("supprimer", key ="del"+str(coach.id_coach) ) :
         utils.delete_coach(engine, coach.id_coach)
-        st.session_state["edit_mode"] = False
-        pass
+        st.session_state.clear()
+        st.rerun()
 
 #______________________________________________________________________________
 #
@@ -91,16 +91,15 @@ else :
 column_label, column_textbox = current_line.columns(right_side_proportions, vertical_alignment="center")
 column_label.write("specialite :")
 if edit_mode :
-    form_specialite_coach = column_textbox.text_input("", value = updating_coach.specialite, key = "specialite_coach")
+    form_specialite_coach = column_textbox.text_input("", value = updating_coach.specialite, key ="specialite_coach")
 else :
-    form_specialite_coach = column_textbox.text_input("", key = "specialite_coach")
-
+    form_specialite_coach = column_textbox.text_input("", key ="specialite_coach")
 
 column_label, column_textbox = current_line.columns([0.45, 0.55], vertical_alignment="center")
 if edit_mode :
 
     if column_label.button("Annuler") :
-        st.session_state["edit_mode"] = False  
+        st.session_state.clear()  
         st.rerun()
 
     if column_textbox.button("Modifier") :      
@@ -108,7 +107,7 @@ if edit_mode :
             coach = models.Coach(id_coach=updating_coach.id_coach, nom_coach = form_nom_coach, specialite=form_specialite_coach)
             utils.update_coach(engine, coach)
 
-        st.session_state["edit_mode"] = False  
+        st.session_state.clear()   
         st.rerun()
 
 else :
@@ -118,5 +117,8 @@ else :
         if form_nom_coach != "" and form_specialite_coach != "" :
             coach = models.Coach(nom_coach = form_nom_coach, specialite=form_specialite_coach)
             utils.create_coach(engine, coach)
-            
+
+        st.session_state.clear()  
+        st.session_state["nom_coach"] = ""
+        st.session_state["specialite_coach"] = ""
         st.rerun()          

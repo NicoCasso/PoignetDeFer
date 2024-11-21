@@ -45,9 +45,9 @@ def update_coach(engine : Engine, coach : Coach) -> bool:
     
     return False
     
-def delete_coach(engine : Engine, coach: Coach) -> bool:
+def delete_coach(engine : Engine, coach_id: int) -> bool:
     with Session(engine) as session:
-        statement = select(Coach).where(Coach.id_coach == coach.id_coach)
+        statement = select(Coach).where(Coach.id_coach == coach_id)
         results = session.exec(statement)
         linked_coach = results.one()
         session.delete(linked_coach)
