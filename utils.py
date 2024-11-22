@@ -273,7 +273,7 @@ def get_cours_by_inscriptions(engine : Engine, inscription_ids:list[int]) -> lis
     list_cours = []
     with Session(engine) as session:
         statement = select(
-            Cours, Inscription
+            Cours
         ).join( 
             Inscription
         ).where(
