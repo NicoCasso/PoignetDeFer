@@ -29,12 +29,26 @@ if st.button("S'inscrire"):
         cours_id = cours_selectionne[1]
 
         inscription_list = utils.get_inscription_by_id(engine, cours_id)
-        nb_inscriptions = len(inscription_list)
-        if nb_inscriptions < 5:
-            if utils.create_inscription(engine, cours_id, id_membre):
-                st.success(f"{nom} est inscrit au cours {cours_selectionne[0]}")
+
+        found=False
+        for inscription in inscription_list:
+            if inscription.membre_id==id_membre and inscription.cours_id==cours_id:
+                found=True
+                break
+
+        if found==True:
+            st.error("deja inscrit")
+
+        else:    
+            nb_inscriptions = len(inscription_list)
+            capacite_max = utils.get_cours_by_id(engine, cours_id).capacite_max
+            if nb_inscriptions <= capacite_max:
+                if utils.create_inscription(engine, cours_id, id_membre):
+                    st.success(f"{nom} est inscrit au cours {cours_selectionne[0]}")
+                else:
+                    st.error("ajout impossible")
             else:
                 st.error("Le cours est complet. Veuillez choisir un autre cours.")
-        else:
-            st.error("Veuillez entrer votre nom.")
+    else:
+        st.error("Veuillez entrer votre nom.")
 

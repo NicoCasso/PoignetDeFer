@@ -74,7 +74,7 @@ def get_cours_list(engine : Engine) -> list[Cours]:
         
     return list_cours
 
-def get_cours_by_id(engine : Engine, id_cours: int) -> Coach:
+def get_cours_by_id(engine : Engine, id_cours: int) -> Cours:
     return_value = None
     with Session(engine) as session:
         statement = select(Cours).where(Cours.id_cours == id_cours) 
