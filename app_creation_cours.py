@@ -5,12 +5,14 @@ from models import Coach, Cours
 from init_db import get_engine
 from utils import creation_cours
 engine = get_engine
+
+
 #creation d’un cours
 
 with st.form(key="nouveau_cours"):
     nom_cours = st.text_input("Nom du cours")
-    jour = st.selectbox("jour", ["Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi"])
-    heure = st.selectbox("Horaire", [f"{i}Heures" for i in range(9, 17)])
+    jour = st.selectbox("jour", ["lundi", "mardi", "mercredi", "jeudi", "vendredi"])
+    heure = st.selectbox("Horaire", [f"{i} h" for i in range(9, 17)])
     capacite_max = st.number_input("Capacité maximum", min_value=1, step=1)
     submit_button = st.form_submit_button(label="confirmer ajout cours")
 
@@ -30,7 +32,9 @@ with st.form(key="nouveau_cours"):
         creation_cours(nom_cours, jour, heure, capacite_max, id_coach)
         st.success("cours ajouter au calendrier")
 
-#AFFICHAGE DES COURS
+
+
+#AFFICHAGE DES COURS CREÉS
 
 with Session(engine) as session:
     statement = select(Cours)

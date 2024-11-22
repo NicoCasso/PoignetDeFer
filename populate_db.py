@@ -42,13 +42,13 @@ def populate_db(engine : Engine) :
             jour = "lundi",
             heure = 9,
             capacite_max=20,
-            coach_id_cours = coach1.id_coach)
+            coach_id = coach1.id_coach)
         
         cours2 = Cours(nom_cours="Crossfit et Pump", 
             jour = "lundi",
             heure = 10,
             capacite_max=20,
-            coach_id_cours = coach1.id_coach)
+            coach_id = coach2.id_coach)
         
         session.add(cours1)
         session.add(cours2)
