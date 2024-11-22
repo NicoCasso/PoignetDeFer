@@ -2,6 +2,9 @@ from sqlmodel import Session, select, delete
 from sqlalchemy import Engine
 from typing import cast
 from models import * 
+import streamlit as st
+import pandas as pd
+
 
 #______________________________________________________________________________
 #
@@ -277,6 +280,36 @@ def get_cours_by_inscriptions(engine : Engine, inscription_ids:list[int]) -> lis
             Inscription.id_inscription.in_(inscription_ids)
         )  
         results = session.exec(statement)
-        list_membres = list(results)
-        
+        list_cours = list(results)
+
     return list_cours
+
+def creation_cours(engine : Engine, nom_cours, jour, heure, capacite_max, id_coach):
+    list_creation_cours = []
+    with Session(engine) as session:
+        cours = Cours(nom_cours=nom_cours, jour=jour, heure=heure, capacite_max=capacite_max, coach_id=id_coach)
+        session.add(cours)
+        session.commit()
+        return True
+    return False
+
+
+#affichage des donnée via Panda( optionnel,permet la visualisation)
+
+# def charger_donnees():
+#     with Session(engine) as session:
+#         query = select(Cours, Coach).join(Coach)
+#         results = session.exec(query).all()
+#         data = [{ "Nom du cours": cours.nom_cours,
+#                   "Heure de début": cours.heure_debut,
+#                     "Jour": cours.jour,
+#                       "Capacité": cours.capacite,
+#                         "Coach": cours.coach.nom
+#                 } for cours, coach in results]
+#         df = pd.DataFrame(data)
+#         return df
+    
+#  # Charger les données et afficher le DataFrame
+#  df = charger_donnees()
+#  st.subheader('Données des Cours')
+#  st.dataframe(df)
