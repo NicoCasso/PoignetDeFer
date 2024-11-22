@@ -136,6 +136,10 @@ def delete_cours(engine : Engine, cours_id: int) -> bool:
         results = session.exec(statement)
         linked_cours = results.one()
         session.delete(linked_cours)
+       
+        for inscription in get_inscription_by_id2(session, cours_id):
+            session.delete(inscription)
+
         session.commit()
         return True
     
@@ -205,6 +209,15 @@ def get_membre_by_id(engine : Engine, membre_id) -> Membre :
 
     return membre
 
+def get_membre_list(engine : Engine) -> list[Membre] :
+    membres = []
+    with Session(engine) as session:
+        statement = select(Membre) 
+        results = session.exec(statement)
+        membres = results.all()
+
+    return cast(list[Membre], membres)
+
 #______________________________________________________________________________
 #
 # region maxime
@@ -223,9 +236,18 @@ def afficher_cours_dispo(engine : Engine) -> list[Cours]:
 def get_inscription_by_id(engine : Engine, cours_id:int) -> list[Inscription]: 
     inscriptions_list = []
     with Session(engine) as session:  
-        statement = select(Inscription).filter(Inscription.cours_id == cours_id)
-        results = session.exec(statement)
-        inscriptions_list = list(results)
+        inscriptions_list=get_inscription_by_id2(session, cours_id)
+
+    return inscriptions_list
+
+
+
+def get_inscription_by_id2(session : Session, cours_id:int) -> list[Inscription]: 
+    inscriptions_list = []
+      
+    statement = select(Inscription).filter(Inscription.cours_id == cours_id)
+    results = session.exec(statement)
+    inscriptions_list = list(results)
 
     return inscriptions_list
 
