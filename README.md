@@ -48,8 +48,6 @@ Cette application permet de gérer un calendrier de cours et d'inscrire des part
     pip install -r requirements.txt
 
 3. **Créer la base de données** :
-    from sqlmodel import SQLModel, create_engine
-    from your_module import Cours, Coach, Membre, Inscription, Carte_d_acces
 
     Dans VSC, terminal, taper la commande 
     python3 populate_db.py 
