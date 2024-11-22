@@ -1,3 +1,4 @@
 sqlmodel==0.0.22
 streamlit==1.40.1
 Faker==33.0.0
+streamlit-modal==0.1.2

@@ -17,7 +17,7 @@ engine = get_engine()
 
 left_side, right_side = st.columns([0.7, 0.3])
 
-coaches = utils.get_coaches(engine)
+coach_list = utils.get_coach_list(engine)
 
 #______________________________________________________________________________
 #
@@ -36,7 +36,7 @@ column_specialite.write("specialite")
 column_update.write("action")
 column_delete.write("action")
 
-for coach in coaches :
+for coach in coach_list :
     column_id, column_name, column_specialite, column_update, column_delete = current_line.columns(column_proportions, gap ="small")
     column_id.write(str(coach.id_coach))
     column_name.write(coach.nom_coach)
