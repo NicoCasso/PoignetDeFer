@@ -4,7 +4,6 @@ from sqlalchemy import Engine
 from models import Cours, Coach
 import utils
 from typing import cast
-from streamlit_modal import Modal
         
 st.set_page_config(layout="wide")
 st.title("Administration Cours")
@@ -95,7 +94,8 @@ column_label, column_textbox = current_line.columns(right_side_proportions, vert
 column_label.write("nom : ")
 cours_options = utils.get_nom_cours_options()
 if edit_mode :
-    form_nom_cours = column_textbox.selectbox("", options=cours_options, value = updating_cours.nom_cours , key = "nom_cours")
+    index_nom = cours_options.index(updating_cours.nom_cours)
+    form_nom_cours = column_textbox.selectbox("", options=cours_options, index = index_nom , key = "nom_cours")
 else :
     form_nom_cours = column_textbox.selectbox("", options=cours_options, key = "nom_cours")
 
@@ -110,7 +110,8 @@ if edit_mode :
         updating_coach = utils.get_coach_by_id(engine, updating_cours.coach_id)
 
     if updating_coach != None :
-        form_nom_coach = column_textbox.selectbox("", options=coach_options, value = updating_coach.nom_coach , key = "nom_coach")
+        index_coach = coach_options.index(updating_coach.nom_coach)
+        form_nom_coach = column_textbox.selectbox("", options=coach_options, index = index_coach , key = "nom_coach")
     else :
         form_nom_coach = column_textbox.selectbox("", options=coach_options, key = "nom_coach")
 else :
@@ -120,7 +121,8 @@ column_label, column_textbox = current_line.columns(right_side_proportions, vert
 column_label.write("jour : ")
 jour_options = utils.get_jour_options() 
 if edit_mode :
-    form_jour_cours = column_textbox.selectbox("", options=jour_options, value = updating_cours.jour , key = "jour_cours")
+    index_jour = jour_options.index(updating_cours.jour.lower())
+    form_jour_cours = column_textbox.selectbox("", options=jour_options, index=index_jour  , key = "jour_cours")
 else :
     form_jour_cours = column_textbox.selectbox("", options=jour_options, key = "jour_cours")
 
@@ -128,7 +130,8 @@ column_label, column_textbox = current_line.columns(right_side_proportions, vert
 column_label.write("heure : ")
 heure_options = utils.get_heure_options()
 if edit_mode :
-    form_heure_cours = column_textbox.selectbox("", options= heure_options, value = updating_cours.heure , key = "heure_cours")
+    index_heure = heure_options.index(f"{updating_cours.heure} h")
+    form_heure_cours = column_textbox.selectbox("", options= heure_options, index = index_heure , key = "heure_cours")
 else :
     form_heure_cours = column_textbox.selectbox("", options= heure_options, key = "heure_cours")
 
@@ -139,6 +142,10 @@ if edit_mode :
 else :
     form_capacite_cours = column_textbox.text_input("", key = "capacite_cours")
     
+# @st.dialog("Pas possible")
+# def pas_possible(item):
+#     st.write(f"{item} impossible")
+#     st.write("On ne devrait pas pouvoir faire ça")
 
 column_label, column_textbox = current_line.columns([0.45, 0.55], vertical_alignment="center")
 if edit_mode :
@@ -154,15 +161,13 @@ if edit_mode :
             coach_list,
             str(form_jour_cours),
             str(form_heure_cours),
-            int(form_capacite_cours), 
+            str(form_capacite_cours), 
             int(updating_cours.id_cours)
         )   
-        if cours != None :
-            utils.update_cours(engine, cours)
-        else :
-             with Modal(key="Impossible_upd", title="Modification impossible").container():
-                st.markdown("Désolé, ça n'est pas possible")
-
+        if cours == None or not utils.update_cours(engine, cours) :
+            #pas_possible("modification")
+            pass
+        
         st.session_state.clear()   
         st.rerun()
 
@@ -176,19 +181,19 @@ else :
             coach_list,
             str(form_jour_cours),
             str(form_heure_cours),
-            int(form_capacite_cours)
+            str(form_capacite_cours)
         )   
-        if cours != None :
-            utils.create_cours(engine, cours)
-        else :
-            with Modal(key="Impossible_cre", title="Création impossible").container():
-                st.markdown("Désolé, ça n'est pas possible")
+        if cours == None or not utils.create_cours(engine, cours) :
+            # pas_possible("Creation")
+            pass
 
         st.session_state.clear()  
-        st.session_state["nom_cours"] = 0
-        st.session_state["nom_coach"] = 0
-        st.session_state["jour_cours"] = 0
-        st.session_state["heure_cours"] = 0
-        st.session_state["capacite_cours"] = 0
+        st.session_state["nom_cours"] = ""
+        st.session_state["nom_coach"] = ""
+        st.session_state["jour_cours"] = ""
+        st.session_state["heure_cours"] = ""
+        st.session_state["capacite_cours"] = ""
 
         st.rerun()      
+
+

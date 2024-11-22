@@ -16,7 +16,7 @@ class Cours(SQLModel, table = True):
     heure : int 
     capacite_max : int
 
-    coach_id : Optional[int]= Field(default=None, foreign_key="coach.id_coach")
+    coach_id : Optional[int] = Field(default=None, foreign_key="coach.id_coach")
     coach: Optional[Coach] = Relationship(back_populates="liste_cours")
 
     liste_inscriptions  : list["Inscription"] = Relationship(back_populates="cours")

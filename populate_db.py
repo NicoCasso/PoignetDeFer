@@ -42,9 +42,9 @@ def populate_db(engine : Engine) :
         coach2 = Coach(nom_coach= "Nicolas", specialite="Crossfit et Pump")
         coach3 = Coach(nom_coach= "Arnold", specialite="Musculation")
         coach4 = Coach(nom_coach= "Mike", specialite="Boxe et Body Combat")
+
         membre1 = Membre(nom_membre= "edouard", email="eaeae")
         membre2 = Membre(nom_membre="Jean", email="eoeuu")
-
 
         session.add(coach1)
         session.add(coach2)
@@ -58,13 +58,13 @@ def populate_db(engine : Engine) :
             jour = "lundi",
             heure = 9,
             capacite_max=20,
-            coach_id_cours = coach1.id_coach)
+            coach_id = coach1.id_coach)
         
         cours2 = Cours(nom_cours="Crossfit et Pump", 
             jour = "lundi",
             heure = 10,
             capacite_max=20,
-            coach_id_cours = coach1.id_coach)
+            coach_id = coach2.id_coach)
         
         session.add(cours1)
         session.add(cours2)
@@ -79,8 +79,8 @@ def populate_db(engine : Engine) :
         inscription2=Inscription(date_inscription=date3,membre_id=membre2.id_membre,cours_id=cours1.id_cours)
         inscription3=Inscription(date_inscription=date7,membre_id=membre1.id_membre,cours_id=cours2.id_cours)
         inscription4=Inscription(date_inscription=date9,membre_id=membre2.id_membre,cours_id=cours2.id_cours)
-        session.add(inscription1)
 
+        session.add(inscription1)
         session.add(inscription2)
         session.add(inscription3)
         session.add(inscription4)
