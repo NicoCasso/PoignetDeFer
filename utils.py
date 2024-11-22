@@ -191,6 +191,19 @@ def delete_inscription(engine : Engine, inscription_id: int) -> bool:
 
 #______________________________________________________________________________
 #
+# region membre
+#______________________________________________________________________________
+def get_membre_by_id(engine : Engine, membre_id) -> Membre :
+    membre = None
+    with Session(engine) as session:
+        statement = select(Membre).where(Membre.id_membre == membre_id)  
+        results = session.exec(statement)
+        membre = results.one()
+
+    return membre
+
+#______________________________________________________________________________
+#
 # region maxime
 #______________________________________________________________________________
 

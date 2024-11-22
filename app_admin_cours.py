@@ -6,7 +6,7 @@ import utils
 from typing import cast
         
 st.set_page_config(layout="wide")
-st.title("Administration Cours")
+st.title("Gestion des cours")
 
 edit_mode = False
 edit_mode_key = st.session_state.get("edit_mode")
