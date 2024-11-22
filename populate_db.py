@@ -1,6 +1,8 @@
 import sqlmodel as sm
 from sqlalchemy import Engine
 from faker import Faker
+from typing import cast
+
 
 import datetime as dt
 from models import *
@@ -9,7 +11,7 @@ import init_db as idb
 fake = Faker('fr_FR')
 
 # Fonction pour créer des membres fictifs
-def creation_membres(nombre_de_membres: int):
+def creation_membres(nombre_de_membres: int) -> list[Membre]:
     membres = []
     for _ in range(nombre_de_membres):
         nom = fake.name()
@@ -19,18 +21,31 @@ def creation_membres(nombre_de_membres: int):
     return membres
 
 # Générer des membres fictifs et les enregistrer dans la base de données
-def enregistrer_membres(nombre_de_membres: int, engine: Engine):
+def enregistrer_membres(nombre_de_membres: int, session: sm.Session):
+
+    cartes = []
+    for i in range(nombre_de_membres):
+        current_carte = Carte_d_acces(key=fake.random_int(min=1000000, max=9999999))
+        cartes.append(current_carte)
+        session.add(current_carte)
+
+    session.commit()
+
     membres = creation_membres(nombre_de_membres)
-    with sm.Session(engine) as session:
-        session.add_all(membres)
-        session.commit()
+
+    for i in range(nombre_de_membres):
+        membres[i].carte_acces_id = cast(Carte_d_acces, cartes[i]).id_carte
+        session.add(membres[i])
+
+    session.commit()
 
 #creation des faux membres(10)
-def creation_membres():
-    return (fake.name(), fake.email())
-for i in range(10):
-    membres = creation_membres()
-    print(f"membres{i+1}:membre:{membres[0]}, Email:{membres[1]}")
+#def creation_membres()  :
+    
+#    for i in range(10):
+#        membres = creation_membres()
+#        print(f"membres{i+1}:membre:{membres[0]}, Email:{membres[1]}")
+#    return (fake.name(), fake.email())  
 
 def populate_db(engine : Engine) :
     echo_object = sm.SQLModel.metadata.create_all(engine)
@@ -43,15 +58,34 @@ def populate_db(engine : Engine) :
         coach3 = Coach(nom_coach= "Arnold", specialite="Musculation")
         coach4 = Coach(nom_coach= "Mike", specialite="Boxe et Body Combat")
 
+
+        carte1 = Carte_d_acces(key=fake.random_int(min=1000000, max=9999999))
+        carte2 = Carte_d_acces(key=fake.random_int(min=1000000, max=9999999))
+        session.add(carte1)
+        session.add(carte2)
+
+        
+        session.commit()
+
         membre1 = Membre(nom_membre= "edouard", email="eaeae")
+        membre1.carte_acces_id=carte1.id_carte
         membre2 = Membre(nom_membre="Jean", email="eoeuu")
+        membre2.carte_acces_id=carte2.id_carte
+
+        session.add(membre1)
+        session.add(membre2)
+
+        session.commit()
+
+
+
+        enregistrer_membres(10, session)
 
         session.add(coach1)
         session.add(coach2)
         session.add(coach3)
         session.add(coach4)
-        session.add(membre1)
-        session.add(membre2)
+        
         session.commit()
 
         cours1 = Cours(nom_cours="Yoga et Pilates", 

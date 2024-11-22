@@ -39,7 +39,7 @@ class Inscription(SQLModel, table = True):
     cours: Cours | None = Relationship(back_populates="liste_inscriptions")
 
 
-class carte_d_acces(SQLModel, table = True):
+class Carte_d_acces(SQLModel, table = True):
     id_carte : int | None = Field(default=None, primary_key=True)
     key : int
 
