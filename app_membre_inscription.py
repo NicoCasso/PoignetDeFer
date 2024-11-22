@@ -58,7 +58,7 @@ if cours_id != -1:
             else:    
                 nb_inscriptions = len(inscription_list)
                 capacite_max = utils.get_cours_by_id(engine, cours_id).capacite_max
-                if nb_inscriptions <= capacite_max:
+                if nb_inscriptions < capacite_max:
                     if utils.create_inscription(engine, cours_id, id_membre):
                         cours_choisis=list(filter(lambda c: c.id_cours==cours_id,cours_liste))
                         if len(cours_choisis) != 0:
